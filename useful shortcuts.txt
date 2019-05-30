@@ -1,0 +1,40 @@
+Useful shortcuts
+
+"Control" + "Shift" + "M" == "%>%" 
+a %>% filter(x < 5)
+
+"Alt" + "-" == "<-"
+a <- 5
+
+"Control" + "Shift" + "/" corta una linea larga en varias mas cortas:
+En un lugar de la mancha de cuyo nombre no quiero acordarme vivia un hidalgo
+caballero de los de lanza en...
+
+"Control" + "Z" == Undo
+"Control" + "Shift" + "Z" == Redo
+"Alt" + "Shift" + "K" == Oper shortcuts list
+
+"Control" + "Alt" + "X" == Extract a function base on a highlighted chunk of code
+
+Multiple cursors:
+"Control" + "Alt" and then:
+(1) up or down arrows to duplicate lines
+(2) clic on as many lines as you want to write the same sentence in them
+
+Compress all folds (expandible sections) in the document
+"Alt" + "O"             == close
+"Alt" + "Shift" + "O"   == open
+
+"Ctrl" + "P" to jump between start and end of a parenthesis
+
+"Shift" + "Alt" + "G" == Go to line...
+
+"Ctrl" + "Shift" + "F10" == Restart R session
+
+Project navigation
+"Ctrl" + "+" == Goto Files in your project by name
+"Ctrl" + "Shift" + "F" == Find anywher in your project
+"Ctrl" + "F9" == Go to the previous file in your project
+"Ctrl" + "F10" == Go to the next file in your project
+Highlight a function name and press F2 => brings you to the function definition
+
