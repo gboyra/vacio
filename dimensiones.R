@@ -6,6 +6,21 @@
 #     Is there any consistent pattern?
 # (3) Correlate abunance with chatches
 
+
+# The data we are using are:
+#   horizontal sonar, 
+#   vertical echosounder EK60 @ 120 kHz, and:
+#   catches per species
+
+# The sonar is a Simrad SN90? with 32 beams of 3.75º each
+# According to Missund (1993), when measuring school sizes with sonar
+# the alongship beam correction should be:
+#   beam = AlongBeamSize - (1500*Pulso*1e-6)/2 
+# and the atwarthship correction should be:
+#   ring = AlongRingSize - 2*n*(2/3)*Rango*tan(3.75*pi/(2*180))
+# where n is the number of beams occupied by the school
+# and Rango is the approximate distance to the center of the school
+
 library(dplyr)
 library(tidyr)
 library(ggplot2)
