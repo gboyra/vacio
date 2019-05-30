@@ -1,0 +1,12 @@
+Preguntas 
+•	Calcular la distorsión atwarth
+•	Estudiar el efecto de la frecuencia del sonar en la medición de diámetros
+  o	Qué frecuencias son más fiables?
+•	Comparar diámetros horizontales y alturas verticales
+•	Estimar capturas usando nasc y altura vertical
+  o	Regresiones paso 1
+  o	Estimas en paso 2
+•	Que variabilidad de tamaños para la misma captua a cada freq
+
+
+
