@@ -141,6 +141,23 @@ map(.x = mod.l2, .f = summary)
 # according to the along beam estimation. If not, apply the result of 
 # the linear regression obtained here.
 
+# boxpplot comparing beam vs ring school diam
+dimensiones %>%  
+  gather(beam:ring, key = "type", value = "diam") %>% 
+  ggplot(aes(y = diam)) + 
+  geom_boxplot(aes(fill = type)) +
+  facet_wrap(~ set)
+
+# scatterplot of delta-diam against set number
+dimensiones %>%  
+  mutate(delta = ring - beam) %>% 
+  group_by(set) %>% 
+  summarise(delta = mean(delta), pulse = mean(Pulso)) %>% 
+  ggplot(aes(y = delta, x = set)) + 
+  geom_point(aes(colour = pulse)) +
+  geom_hline(yintercept = 0, linetype = 2) 
+
+
 
 ## 2. Vertical vs horizontal diameters -------------------------
 # we compare vert vs horiz to see whether there is a stable relationship between them
