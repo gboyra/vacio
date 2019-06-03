@@ -136,11 +136,27 @@ dim.l2 <- split(x = dimensiones, f = dimensiones$Rango)
 mod.l2 <- map(.x = dim.l2, .f = lmod)
 map(.x = mod.l2, .f = summary)
 
-# TODO try the following idea: correct the atwarth diameter estimation with 
-# the formula by Misund (1993). Then see if it corrects completely
+# Check try the following idea: correct the atwarth diameter estimation with 
+# the formula by Misund (1993). Then, see if it corrects completely
 # according to the along beam estimation. If not, apply the result of 
 # the linear regression obtained here.
-  
+
+#
+dimensiones %>%  
+  gather(beam:ring, key = "type", value = "diam") %>% 
+  ggplot(aes(y = diam)) + 
+  geom_boxplot(aes(fill = type)) +
+  facet_wrap(~ set)
+
+dimensiones %>%  
+  mutate(delta = ring - beam) %>% 
+  group_by(set) %>% 
+  summarise(delta = mean(delta), pulse = mean(Pulso)) %>% 
+  ggplot(aes(y = delta, x = set)) + 
+  geom_point(aes(size = pulse)) +
+  geom_hline(yintercept = 0, linetype = 2)
+
+
 
 ## 2. Vertical vs horizontal diameters -------------------------
 # we compare vert vs horiz to see whether there is a stable relationship between them
