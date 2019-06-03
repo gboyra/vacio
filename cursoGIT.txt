@@ -1,0 +1,457 @@
+CURSO GIT-HUB AZTI 2019
+SOFTWARE CARPENTRY
+
+Para descargarse git:
+https://git-scm.com/downloads
+
+git config --global core.editor "'c:/Users/gboyra/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
+alias notepad="c:/Users/gboyra/Notepad++/notepad++.exe"
+
+Ctrl + C  # stop execution
+
+
+# Salir de Vim: "Esc" => ":" => "Q" => "!" => "Enter"
+
+
+# Parte 1. Unix shell esquema (del Software carpentry 2015)
+
+# POSIX minimum standard
+# ls is a program?
+# activar el notepad como editor del shell
+alias notepad="c:/Users/gboyra/Notepad++/notepad++.exe"
+ 
+ 
+# Shell commands:
+# (for blank spaces inside names use quotes: both "" and '')
+ls # mostrar los archivos y carpetas
+pwd # print working directory
+dd # change directory
+cd .. # directorio superior (up)
+cd . # directorio actual - puede ser util dentro de un script
+cd -  # directorio anterior (back)
+~ is the current working directory
+whoamI # devuelve el usuario
+ls -F # the minus is a "flag"
+  # pinta una barra cuando es un directorio
+ls -l # proporciona las fechas de modificación de los archivos
+      # y tb te dice si los archivos se pueden cambiar o leer, y por quién
+      # mirar en el help
+ls nombre.dir # proporciona los archivos dentro del directorio
+ls -l  nombre.dir #  combina flag y directorio
+ls -lF # combina flags
+ls - a # "all" muestra todo el contenido (incluidos ocultos)
+(hay un montón de programas que no muestran los archivos que empiezan con un  "." en el nombre)
+ls -R # Recursive: muestra los subdirectorios y archivos de cada directorio
+ls -h # human readable useful y combination with -l:
+ls -lh
+ls -t  # muestra archivos por orden temporal
+ls -t -l 
+ls -lt -R
+ls -F -a
+ls -r  # reverse order while sorting
+
+
+# TAB-completion (como en R-Studio)
+
+# Mirar algunos comandos: which, open, xdg-open
+mkdir # crear un nuevo directorio
+rmdir # remove (an empty) directory
+rm -r # remove a directory and all its contents
+nano # editor de texto 
+vim # editor por defecto de git bash
+  # probarlo
+  # puto lío
+  # Salir de Vim: "Esc" => ":" => "Q" => "!" => "Enter"
+open archivo.txt (abre el bloc de notas)
+open archivo.R (abre el archivo en el Source editor de RStudio)
+
+# Ayuda:
+touch --help 
+mkdir --help
+
+touch  # modifica la fecha de  un archivo; si no existe, lo crea
+echo "Hello world"
+cat # muestra el contenido de un archivo de texto en el shell
+clear # limpia el histórico
+
+history  # displays the last 100 commands preceded by a serial number
+  # you can access them typing ! followed by the corresponding number, i.e.,
+  !69
+  # if you type ! followed by a command name it will run the last use of 
+  # that command, i.e.,
+  !git
+ 
+# CREATING THINGS
+cp # copia un archivo en otro
+cp /users/myfile.txt . # copia el archivo al directorio actual
+cp dir1 dir2  # copia un directorio en otro
+cp -r dir1 dir2 # (recursive) copia todos los archivos de un directorio
+cp file1 file2 file5 dir/
+
+mv ruta1/archivo1.txt ruta2/archivo1.txt  # mueve un archivo a otro sitio
+mv ruta1/archivo1.txt ruta2/archivo2.txt 
+  # lo mueve y 
+  # lo cambia de nombre 
+rm  # borra un archivo para siempre
+    # no borra directorios, salvo si expresamente indicamos:
+rm -r dir1  # recursivo, borra directorio y todo su contenido
+~ se interpreta como el home directory del currrent user
+cd ~  # te lleva alli, pero donde es alli?
+pwd  # c/users/gboyra
+# Nota - en el shell, diferenciar entre:
+  # home directory: c/users/gboyra
+  # working directory: donde estas en cada momento
+cd ~/dir1/file.txt
+  
+touch # creates an empty file
+date # prints the date
+
+# WILDCARDS
+*  # is a wildcard (comodín), matches zero or many characters
+?  # is also a wildcard, matches only a single character
+[...] # matches any one of the characters inside the square brackets, so         # 201[78].txt matches 2017.txt or 2018.txt, but not 2016.txt.
+{...}  # matches any of the comma-separated patterns inside the curly brackets,   # so {*.txt, *.csv} matches any file whose name ends with .txt or .csv
+
+
+# FILTERS
+wc *.pdb  # "word count" command; cuenta líneas, palabras y caracteres
+  # por ese orden
+  # de todos los archivos con ext pdb
+wc -l *.pdb # solo muestra el número de líneas (-w -c)
+wc -l *.pdb > length.txt # copia el output en el archivo length.txt
+  # > es un comando destructivo, cada vez que lo haces borra el
+  # contenido original y lo reemplaza por el nuevo 
+  # >> mueve añadiendo en vez de reeplazando
+sort length.txt -n # ordena numéricamente
+sort length.txt -a # ordena alfabéticamente
+sort -k 2 length.txt # ordena a partir del segundo carácter
+sort -r  # -reverse the order
+sort -b  # ignore leading -blanks 
+# mirar el help: sort --help
+uniq  # removes "adjacent" duplicate lines
+      # -c adds a count of how ofter each occurs
+      
+# Select rows
+head length.txt # prints the start of the file
+head -2 length.txt  # prints the start of the file until the second line
+tile -5 length.txt # prints the end of the file (no funciona en windows)
+# Select columns 
+cut -d , -f 1-4,8 length.txt # select -fields 1-4 and 8 using -delimiter "," 
+# Select lines according to their content
+grep text file.txt  
+  # prints the lines in file.txt that contain "text"
+  # Common flags:
+    # -c: print a count of matching lines rather than the lines themselves
+    # -h: do not print the names of files when searching multiple files
+    # -i: ignore case (e.g., treat "Regression" and "regression" as matches)
+    # -l: print the names of files that contain matches, not the matches
+    # -n: print line numbers for matching lines
+    # -v: invert the match, i.e., only show lines that don't match
+
+# NESTED COMMANDS (PIPES):
+# (el resultado del anterior se usa como input del siguiente…)
+# The vertical bar | is called a "pipe"
+  # It's written between two commands
+  # uses the output of the first as input of the second
+wc -l *.pdb | sort -n | head -3
+wc < length.txt # the reverse of >
+bash script.txt # ejecuta los scripts que tengas escritos en el archivo
+Explain.shell.com # explica lo que hace un script de forma gráfica
+
+
+# VARIABLES AND LOOPS
+
+# To set a variable name do:
+name=guillermo.txt  
+  # no spaces allowed before and after the "=" sign
+# To get the value of a variable, put $ before its name:
+$name.variable
+head $name -n 1  # read the first line of guillermo.txt
+# If you type:
+echo name   # you get "name"
+echo $name  # you get "guilllermo.txt"
+
+# Structure of a for loop: 
+for ... in ... ; do ... ; done  
+ # notice the ";" just before "do" and "done"
+# Examples:
+for filename in dir1/*.txt; do echo filename; done
+for file in dir1/*.csv; do grep -h text $file; done
+  # equivalent to:
+  grep -h 2017-07 seasonal/*.csv
+# Combining loops and pipes:
+for file in seasonal/*.csv; do head -n 2 $file | tail -n 1; done
+# Multiple task loops:
+for f in *.R; do echo $f; head -n 2 $f | tail -n 1; done 
+  # you can add many tasks, each ending on a semicolon ";"
+  
+SHELL SCRIPTS
+nano guillermo.txt
+# Common Ctrl-key combinations of nano:
+Ctrl + K  # Kut a line 
+Ctrl + U  # Paste a line (Undelete)
+Ctrl + O  # Save (Output)
+# You can copy scripts into text editors and the run them
+nano script.sh  # then you type there, e.g.:
+for filename in dir1/*.txt; do echo filename; done  # save & exit, and then:
+bash script.sh # you run the script to execute all the code
+# You can also save the output into a file:
+bash script.sh > output.txt  
+
+# Pass filenames to scripts
+# The expression "$@" inside a script means 
+# "all the command-line parameters given to the script"
+nano script.sh  # you type inside:
+sort $@ | uniq  # and then you run it like this:
+bash script.sh guillermo.txt "Useful shortcuts.R"
+
+# You can also pass variables in order of appearance in the command-line:
+nano select-coord.sh  # type in:
+head -n $2 $1 | tail -n 1 | cut -d , -f $3  # and now run it
+bash get-field.sh seasonal/summer.csv 4 2
+# you pass three variables to the script:
+  # (1) file, (2) line and (3) column 
+
+# Loops in scripts:
+# when you write loops in scripts
+# you can replace ";"s by "return"s to make them more readable, e.g.:
+# Print the first and last data records of each file.
+for filename in $@
+do
+    head -n 2 $filename | tail -n 1
+    tail -n 1 $filename
+done
+# you don't have to indent, but is good style
+# you can enter comments starting with "#" in scripts to explain what they do
+
+
+# Parte 2. INTRODUCCIÓN A GIT 
+# Summary: git, init, config, add, (reset), commit, status, diff, log
+ 
+# CONFIGURACIÓN
+
+where git  # to know the path to git.exe for RStudio 
+git config --global core.editor "'c:/Users/gboyra/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
+git config --global core.editor "'c:/Users/gboyra/AppData/Local/Programs/Git/usr/bin/nano.exe' -multiInst -notabbar -nosession -noPlugin"
+alias notepad="c:/Users/gboyra/Notepad++/notepad++.exe"
+git config--global user.email user.name
+
+git help # generic help
+git help commit # specific help
+git config --list 
+git config --list --local
+ 
+# Repository: a directory under version control
+git init
+# Hint: don't put repositories inside repositories
+# Inside the repository, start tracking files
+git add names.txt  # to stage the files
+git reset names.txt  # to unstage them
+# Commit changes (create a new version)
+git commit -m "initial version of the project"
+  # -m: message
+# (If you don't put the message, git will open your default text editor so you # can type the message)
+ 
+git log  # see all the history of changes
+git log -2  # to see only the last two commits
+git log -2 guillermo.txt  # changes involving this particular file
+ 
+# Edit files and test the changes
+# ...
+# Stage the files
+git add whatever.txt
+
+# Check
+git status
+# Commit the new version:
+git commit -m "I add a blablabla sentence to the names.txt file"
+# Check
+git status
+ 
+# Ejercicio 
+# Creamos un archivo script.txt:
+touch script.txt
+# Editamos el archivo: 
+wc names.txt | sort -n
+# Vemos lo que lleva escrito:
+cat script.txt
+# Lo ejecutamos:
+bash script.txt  # ejecuta todo el script
+# Añadimos el archivo a stage
+git add script.txt
+git status  # check
+# New version:
+git commit -m  "we add a new file script.txt with a script inside"
+git log  # (lots of options, check git help log)
+  # git log renders text by chunks
+  # you have to press the space bar to show the next chunk
+  # when reaching END, press "Q"
+# Amend: we can add more changes to the previous commit
+git commit -m -amend "You can change the message of the commit"
+ 
+# VER LAS DIFERENCIAS
+# Editamos uno de los scritps
+# Para ver las diferencias entre el editado y el último commit:
+git diff script.txt # IMP: hacerlo antes de git add
+  # si no, diff no muestra nada
+git status
+git add script.txt
+git status
+git commit -m "I add a line at the end of script.txt"
+git status
+
+nano .gitignore
+ # metes dentro los nombres de archivos que no quieras trackear, i.e.:
+ *.dat 
+ !excepcion.dat
+ 
+ # List and remove untracked files
+ git clean -n  # show untracked files
+ git clean -f  # remove untracked files
+  # be careful with this command
+
+# DESHACER CAMBIOS
+# Checkout - undo changes
+# changes that have not been committed
+# (1) changes that have not yet been staged
+  git checkout -- filename  # notice the double "--"
+# (2) changes that have already been staged
+  git reset filename        # first unstage
+  git checkout -- filename  # then undo
+  # to undo everything:
+    git reset
+    git checkout -- .
+# Undo commited changes:
+	git checkout <SHA.number> <file.name> 
+	# The SHA number is obtained in the History:
+		# Click in the previous commit to the one you want to undo and
+		# Copy its SHA number
+# Revert (in RStudio) – undo uncommited changes
+	# Go to Git-Tab > History > Revert > Yes 
+	# You can undo line by line changes in the Commit tab using:
+		discard chunk/line
+Ctrl + Z (RStudio undo)
+# Ammend commit:
+	Add the new changes to the previous commit
+ 
+# BRANCHES
+# A branch is a parallel universe for your repository
+# Al hacer git init crea una Master Branch
+# Se puede hacer un test branch
+git branch new.branch       # create new branch version 1
+git checkout -b new.branch  # create new branch version 2
+# Check the current branch
+git branch # lists all the branches you have
+  # current branch is highlighted with an "*"
+# Moverse a la nueva branch
+git checkout new.branch
+# Compare both branches:
+git diff branch1..branch2  # or simply:
+git diff branch1 branch2
+ 
+# MERGE BRANCHES
+# Switch INTO the master branch:
+git checkout master
+# Merge FROM the testing branch:
+git merge branch2 master 
+  # branch2 is the branch from where you merge into master
+# IMP: to keep changes in testing branch when merging:
+git checkout Master
+git merge testing  # testing overrides master
+# to keep changes in master branch when merging:
+git checkout testing
+git merge master  # master overrides testing
+# The easy way of working is the following:
+  # (1) make changes only in the secondary branches
+  # (2) when you are done with the changes commit everything
+  # (3) checkout into the master branch and
+  # (4) git merge secondary
+  # you don't need to commit after merging
+  # esto es un ejemplo de "fast-forward" merging
+  # (5) now you can delete the secondary branch:
+  git branch -d secondary
+
+
+# Conflicts:
+# when you change differently the same part of the same file
+# in two branches, this creates a conflict
+# If there is a conflict you solve it manually by opening in an editor
+# git will have set flags to identify the conflicts
+# Delete the new branch
+git branch -d new.branch
+ 
+git log --oneline
+# Mirar el archivo galaxies.txt en un estado anterior 
+# (definido por el sha.number listado por log)
+git show sha.number galaxies.txt
+# Entrar en un branch anterior para hacer cambios en él
+git chechout a1b567
+ 
+# SURPRISE
+# Create a new surprise branch
+# Create a new file stars.txt
+# Check the file (ls) in master
+# Check the file (ls) in surprise
+# Up to now is visible in all branches
+# Switch to the master branch
+# Stage and commit
+# Now it's only visible in the committed branch
+# If we now try to delete the surprise branch git won't allow us
+ 
+
+# COLLABORATION - REMOTE - GitHub
+# Bitbucket.com free private repositories
+
+# First, you have to create an **EMPTY** github repository
+# Then, you add the remote location to your local repository:
+git remote add origin ip.address  # you call it "origin"
+# send the data:
+git push -u origin master
+# it pushes all the files in the repository (I think)
+# Receive data:
+git pull origin master
+ 
+# Ejercicio: enviar un archivo a GitHub
+ 
+# se supone que tenemos ya configurada una cuenta GitHub
+# en la cual disponemos del repositorio "datasciencecoursera"
+ 
+touch HelloWorld.md
+# abrimos el archivo y escribimos: "## This is a markdown document"
+ 
+# ahora creamos un repositorio git
+# necesitamos hacerlo para poder "empujarlo" al remoto
+# (parece que necesitamos empujar repositorios "iniciados")
+git init
+git add HelloWorld.md
+git status
+git commit -m "initial version of the project"
+ 
+# ahora definimos nuestro repositorio remoto:
+git remote add origin https://github.com/gboyra/datasciencecoursera.git
+# le hemos dicho a git que añadimos un repositorio remoto 
+  # (llamado origin) a nuestro proyecto
+  # y que se encuentra en la dirección ip: 
+  # https://github.com/gboyra/datasciencecoursera.git
+# la dirección IP se puede copiar directamente en githup (Copy to clipboard)
+ 
+# para comprobar si ha funcionado se puede hacer:
+git remote -v
+# te debería devolver la dirección del repositorio remoto
+ 
+# Una vez definido el repositorio, tratamos de mandar el repositorio local (llamado master)
+# al repositorio remoto (llamado origin)
+# si hacemos pull, enviamos de origin >> master
+# si hacemos push, enviamos de master >> origin
+git push (-u) origin master 
+# te pide el usuario y contraseña
+ 
+# la primera vez no me funcionó pq los repositorios eran diferentes, 
+# así que intenté:
+git pull origin master
+# esto sí me funcionó, así que ahora volví a repetir:
+git push origin master
+# y vualá!
+
+Devtools::install_github  # installs a library from github
+
