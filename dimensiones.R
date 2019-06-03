@@ -110,7 +110,7 @@ dimensiones <- dimensiones %>%
           Rango == 600 ~ 13
           ),
           beam = AlongBeamSize - (1500*Pulso*1e-6)/2, 
-          ring = AlongRingSize - 2*n*(2/3)*Rango*tan(3.75*pi/(2*180)))
+          ring = AlongRingSize - 2*n*(2/3)*distance*tan(3.75*pi/(2*180)))
 dimensiones %>%
   filter(Dudoso != 1) %>%
   ggplot(aes(x = beam, y = ring)) +
@@ -141,21 +141,22 @@ map(.x = mod.l2, .f = summary)
 # according to the along beam estimation. If not, apply the result of 
 # the linear regression obtained here.
 
-#
+# boxplot of alongship vs athwarthship diameters
 dimensiones %>%  
   gather(beam:ring, key = "type", value = "diam") %>% 
   ggplot(aes(y = diam)) + 
   geom_boxplot(aes(fill = type)) +
   facet_wrap(~ set)
 
+# scatterplot of difference in diameter per set
 dimensiones %>%  
   mutate(delta = ring - beam) %>% 
   group_by(set) %>% 
   summarise(delta = mean(delta), pulse = mean(Pulso)) %>% 
   ggplot(aes(y = delta, x = set)) + 
-  geom_point(aes(size = pulse)) +
-  geom_hline(yintercept = 0, linetype = 2)
-
+  geom_point(aes(fill = pulse), size = 2) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  theme_bw()
 
 
 ## 2. Vertical vs horizontal diameters -------------------------
