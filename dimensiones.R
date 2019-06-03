@@ -145,7 +145,12 @@ map(.x = mod.l2, .f = summary)
 dimensiones %>%  
   gather(beam:ring, key = "type", value = "diam") %>% 
   ggplot(aes(y = diam)) + 
+<<<<<<< HEAD
   geom_boxplot(aes(fill = type)) 
+=======
+  geom_boxplot(aes(fill = type)) +
+  facet_wrap(~ set)
+>>>>>>> 0afbef9aea4cbf69676c157bee88223f19d4f813
 
 # scatterplot of delta-diam against set number
 dimensiones %>%  
@@ -156,6 +161,10 @@ dimensiones %>%
   geom_point(aes(colour = pulse)) +
   geom_hline(yintercept = 0, linetype = 2) 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0afbef9aea4cbf69676c157bee88223f19d4f813
 
 ## 2. Vertical vs horizontal diameters -------------------------
 # we compare vert vs horiz to see whether there is a stable relationship between them
