@@ -1,5 +1,7 @@
 # script to analyze dimensions of aggregations around FADs
 
+# 0. Description  ----------------
+
 # there are several objectives in this study:
 # (1) Measure and correct atwarth distorsion of multibeam sonar
 # (2) Compare horizontal and vertical diameters of aggregations
@@ -21,15 +23,75 @@
 # where n is the number of beams occupied by the school
 # and Rango is the approximate distance to the center of the school
 
+# 1. Load libraries and input data --------------
+
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(purrr)
 library(broom)
 
-# read data file
+# read data files:
+# (1) dimensiones - sonar-based school diameters 
+# (2) vert - echosounder-based school heights
+# (3) lances - info about catches
+# (4) acous - echosounder acoustic echointegration 
+
+# (1) dimensiones -  sonar-based school diameters 
+# done with Profos by Udane 
+# It measures simultaneously longitudinal and transversal diameters of 
+# the same aggregation around a FAD
+# it contains multiple measures per set, so 
+# needs to be summarised
 dimensiones <- read.table(file = "datos/Dimensions-pp.txt", sep = "\t", 
-                          header = T, dec = ".") 
+                          header = T, dec = ".")  %>% 
+  rename(distance = Diancia.del.Banco..m.)
+str(dimensiones)
+
+# Relevant variables:
+# Self-explanatory: set, Date (mmddyyyy), Time (hhmm)
+# Trans.tilt: transducer tilt angle (º) (0 for horizontal)
+# AlongBeamSize: longitudinal measure of the school diameter (m)
+# AlongRingSize: transversal measure of the school diameter (m)
+# Dudoso: especially difficult or compromised diameter measures (1/0)
+# Pulso: pulse duration (micro s)
+# Rango: maximum detection range of the sonar (m)
+# Frecuency: operating frequency of the sonar (kHz)
+# distance: distance to the center of the school (m)
+
+
+# (2) vert - echosounder-based school heights
+# output of the lines drawn in Echoview by Iñaki
+# indicating the approximate initial and final depth of each school
+# as recorded by the vertical echosounder onboard the logistic boat
+# It contains multiple depths per set, so 
+# we have to summarise befor merging to other data
+vert <- read.table("datos/profundidades.txt", header = T, sep = "\t")
+str(vert)
+
+# Relevant variables:
+# set (id), Zsup, SD_Zsup, Zfin, SD_Zfin (m)
+
+# (3) lances - info about catches
+lances <- read.table("datos/Lances.txt", header = T, sep = "\t")
+str(lances)  
+
+# Relevant variables:
+# Lance, Fecha, Hora
+# Captura.Total, skj, bet, yft (t)
+
+# (4) acous - echosounder acoustic echointegration 
+# vertical acoustic density and NASC at 120 kHz
+# it is 120 instead of 38 because the 38 failed at some point of the survey
+# it is echointegrated between the ranges of the Echoview lines in "vert"
+acous <- read.table("datos/Ecointegra120xlance.txt", header = T, sep = "\t")
+acous <- acous[c(1,5:17, 21:23)]
+acous <- acous[-c(5:9)]
+str(acous)
+
+# Relevant variables:
+# Set, Date_M (yyyymmdd), Time_M (hh:mm:ss.ssss; factor)
+# NASC, Sv_mean
 
 ## 1. Correction of the atwarth dimension  -----------------
 # we measure the diameter of the aggregation along beam and along ring
@@ -38,9 +100,7 @@ dimensiones <- read.table(file = "datos/Dimensions-pp.txt", sep = "\t",
 # with the along-ring ones
 # and try to estimate correction factors for the latter
 
-table(dimensiones$Rango)
 summary(dimensiones)
-
 
 # we apply Misund's corrections:
 dimensiones <- dimensiones %>%
@@ -76,7 +136,7 @@ dim.l2 <- split(x = dimensiones, f = dimensiones$Rango)
 mod.l2 <- map(.x = dim.l2, .f = lmod)
 map(.x = mod.l2, .f = summary)
 
-# try the following idea: correct the atwarth diameter estimation with 
+# TODO try the following idea: correct the atwarth diameter estimation with 
 # the formula by Misund (1993). Then see if it corrects completely
 # according to the along beam estimation. If not, apply the result of 
 # the linear regression obtained here.
@@ -86,7 +146,6 @@ map(.x = mod.l2, .f = summary)
 # we compare vert vs horiz to see whether there is a stable relationship between them
 
 ## 2.1 Summarise vertical diameters per set ---------
-vert <- read.table("datos/profundidades.txt", header = T, sep = "\t")
 vert <- vert %>%
   mutate(delta.z = Zfin - Zsup) 
 vert %>% summary()
@@ -126,14 +185,8 @@ geom %>%
 
 
 ## 3. Predicting catches with only vertical data ----------------
-lances <- read.table("datos/Lances.txt", header = T, sep = "\t")
-colnames(lances)  
-
 lances.geom <- merge(geom, lances, by.x = "set", by.y = "Lance")
 
-acous <- read.table("datos/Ecointegra120xlance.txt", header = T, sep = "\t")
-acous <- acous[c(1,5:17, 21:23)]
-acous <- acous[-c(5:9)]
 lances.geom <- merge(lances.geom, acous, by.x = "set", by.y = "Set")
 lances.geom <- lances.geom[c(1:8, 10, 15:24, 27:32)] 
 
@@ -143,9 +196,9 @@ panel.cor <- function(x, y, digits=2, prefix="", cex.cor)
   usr <- par("usr"); on.exit(par(usr)) 
   par(usr = c(0, 1, 0, 1)) 
   r <- abs(cor(x, y)) 
-  txt <- format(c(r, 0.123456789), digits=digits)[1] 
-  txt <- paste(prefix, txt, sep="") 
-  if(missing(cex.cor)) cex <- 0.8/strwidth(txt) 
+  txt <- format(c(r, 0.123456789), digits = digits)[1] 
+  txt <- paste(prefix, txt, sep = "") 
+  if (missing(cex.cor)) cex <- 0.8/strwidth(txt) 
   
   test <- cor.test(x,y) 
   # borrowed from printCoefmat
@@ -154,8 +207,8 @@ panel.cor <- function(x, y, digits=2, prefix="", cex.cor)
                    symbols = c("***", "**", "*", ".", " ")) 
   
   text(0.5, 0.5, txt, cex = cex * r) 
-  text(.8, .8, Signif, cex=cex, col=2) 
+  text(.8, .8, Signif, cex = cex, col = 2) 
 }
 x11()
-pairs(lances.geom, lower.panel=panel.smooth, upper.panel=panel.cor)
+pairs(lances.geom, lower.panel = panel.smooth, upper.panel = panel.cor)
 # I don't see anything interesting
