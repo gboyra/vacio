@@ -141,23 +141,6 @@ map(.x = mod.l2, .f = summary)
 # according to the along beam estimation. If not, apply the result of 
 # the linear regression obtained here.
 
-# boxplot of alongship vs athwarthship diameters
-dimensiones %>%  
-  gather(beam:ring, key = "type", value = "diam") %>% 
-  ggplot(aes(y = diam)) + 
-  geom_boxplot(aes(fill = type)) +
-  facet_wrap(~ set)
-
-# scatterplot of difference in diameter per set
-dimensiones %>%  
-  mutate(delta = ring - beam) %>% 
-  group_by(set) %>% 
-  summarise(delta = mean(delta), pulse = mean(Pulso)) %>% 
-  ggplot(aes(y = delta, x = set)) + 
-  geom_point(aes(fill = pulse), size = 2) +
-  geom_hline(yintercept = 0, linetype = 2) +
-  theme_bw()
-
 
 ## 2. Vertical vs horizontal diameters -------------------------
 # we compare vert vs horiz to see whether there is a stable relationship between them
