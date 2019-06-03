@@ -1,8 +1,8 @@
-# script to analyze dimensions of aggregations around FADs
+# Script to measure size of aggregations around FADs
 
 # 0. Description  ----------------
 
-# there are several objectives in this study:
+# There are several objectives in this study:
 # (1) Measure and correct atwarth distorsion of multibeam sonar
 # (2) Compare horizontal and vertical diameters of aggregations
 #     Is there any consistent pattern?
@@ -17,11 +17,11 @@
 # The sonar is a Simrad SN90? with 32 beams of 3.75º each
 # According to Missund (1993), when measuring school sizes with sonar
 # the alongship beam correction should be:
-#   beam = AlongBeamSize - (1500*Pulso*1e-6)/2 
+#   Corr.beam = Uncorr.beam - (1500*Pulse*1e-6)/2 
 # and the atwarthship correction should be:
-#   ring = AlongRingSize - 2*n*(2/3)*Rango*tan(3.75*pi/(2*180))
+#   Corr.ring = Uncorr.ring - 2*n*(2/3)*Range*tan(3.75*pi/(2*180))
 # where n is the number of beams occupied by the school
-# and Rango is the approximate distance to the center of the school
+# and Range is the distance to the center of the school
 
 # 1. Load libraries and input data --------------
 
@@ -140,6 +140,21 @@ map(.x = mod.l2, .f = summary)
 # the formula by Misund (1993). Then, see if it corrects completely
 # according to the along beam estimation. If not, apply the result of 
 # the linear regression obtained here.
+
+# boxpplot comparing beam vs ring school diam
+dimensiones %>%  
+  gather(beam:ring, key = "type", value = "diam") %>% 
+  ggplot(aes(y = diam)) + 
+  geom_boxplot(aes(fill = type)) 
+
+# scatterplot of delta-diam against set number
+dimensiones %>%  
+  mutate(delta = ring - beam) %>% 
+  group_by(set) %>% 
+  summarise(delta = mean(delta), pulse = mean(Pulso)) %>% 
+  ggplot(aes(y = delta, x = set)) + 
+  geom_point(aes(colour = pulse)) +
+  geom_hline(yintercept = 0, linetype = 2) 
 
 
 ## 2. Vertical vs horizontal diameters -------------------------
