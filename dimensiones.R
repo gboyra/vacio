@@ -150,6 +150,16 @@ dimensiones %>%
 
   geom_boxplot(aes(fill = type)) +
   facet_wrap(~ set)
+  
+  
+  # boxpplot comparing beam vs ring school diam
+  dimensiones %>%  
+    gather(beam:ring, key = "type", value = "diam") %>% 
+    ggplot(aes(y = diam)) + 
+  geom_boxplot(aes(fill = type)) +
+  geom_boxplot(aes(fill = type)) +
+    facet_wrap(~ set)
+  
 
 # scatterplot of delta-diam against set number
 dimensiones %>%  
